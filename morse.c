@@ -32,17 +32,20 @@ void initializeDictionary() {
     memcpy(dictionary.morseCodes, mc, sizeof(mc));
 }
 
-void getMorseCode(const char character, char *morseCode){
+void getMorseCode(const char character, char *morseChar){
   //Implement this function to get the code of a specific character
+    strcpy(morseChar, "");
     for(int i = 0; i < coderDecoder.dictionary.size; i++) {
         if(coderDecoder.caseSensitive) {
             if(character == coderDecoder.dictionary.characters[i]) {
-                strcpy(morseCode, coderDecoder.dictionary.morseCodes[i]);
+                strcpy(morseChar, coderDecoder.dictionary.morseCodes[i]);
+                return;
             }
         }
         else {
             if(tolower(character) == coderDecoder.dictionary.characters[i]) {
-                strcpy(morseCode, coderDecoder.dictionary.morseCodes[i]);
+                strcpy(morseChar, coderDecoder.dictionary.morseCodes[i]);
+                return;
             }
         }
     }
@@ -61,6 +64,7 @@ void encodeToMorse(const char *text, char *encodedText) {
     char placeholder[MAX_CHAR_FNAME*(MAX_MORSE_LENGTH+1)] = "";
     for(int i = 0; i < strlen(text); i++) {
         getMorseCode(text[i], morseChar);
+        if(strlen(morseChar) == 0) continue;
         strcat(morseChar, " ");
         strcat(placeholder, morseChar);
         strcpy(encodedText, placeholder);

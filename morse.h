@@ -13,7 +13,10 @@
   // Define the maximum size of the Morse code dictionary
 #define MAX_DICTIONARY_SIZE 36
 
+#define CMD_SIZE 32
 
+#define INPUT_TEXT_LENGTH 64
+#define INPUT_MORSE_LENGTH MAX_MORSE_LENGTH*INPUT_TEXT_LENGTH
 // Define a structure for the Morse code dictionary
 struct Dictionary {
     int id;
