@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "morse.h"
 
 Dictionary dictionary;
@@ -23,28 +24,85 @@ void displayHelp() {
 void initializeDictionary() {
     // Initialize the dictionary with Morse code definitions
     // Implement this function to populate dictionary.characters and dictionary.morseCodes arrays.
+    dictionary.id = 0;
+    dictionary.size = MAX_DICTIONARY_SIZE;
+    char chars[MAX_DICTIONARY_SIZE] = "1234567890abcdefghijklmnopqrstuvwxyz";
+    strcpy(dictionary.characters, chars);
+    char *mc[MAX_DICTIONARY_SIZE] = {".----", "..---", "...--", "....-", ".....", "-....", "--...", "---..", "----.", "-----", ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."};
+    memcpy(dictionary.morseCodes, mc, sizeof(mc));
 }
 
 void getMorseCode(const char character, char *morseCode){
   //Implement this function to get the code of a specific character
+    for(int i = 0; i < coderDecoder.dictionary.size; i++) {
+        if(coderDecoder.caseSensitive) {
+            if(character == coderDecoder.dictionary.characters[i]) {
+                strcpy(morseCode, coderDecoder.dictionary.morseCodes[i]);
+            }
+        }
+        else {
+            if(tolower(character) == coderDecoder.dictionary.characters[i]) {
+                strcpy(morseCode, coderDecoder.dictionary.morseCodes[i]);
+            }
+        }
+    }
 }
 
 void initializeCoderDecoder(){
     // Initialize the coder decoder with a dictionary
+    coderDecoder.dictionary = dictionary;
+    coderDecoder.caseSensitive = true;
+    coderDecoder.currentDictionaryId = dictionary.id;
 }
 
 void encodeToMorse(const char *text, char *encodedText) {
     // Implement Morse code encoding logic here
+    char morseChar[MAX_MORSE_LENGTH] = "";
+    char placeholder[MAX_CHAR_FNAME*(MAX_MORSE_LENGTH+1)] = "";
+    for(int i = 0; i < strlen(text); i++) {
+        getMorseCode(text[i], morseChar);
+        strcat(morseChar, " ");
+        strcat(placeholder, morseChar);
+        strcpy(encodedText, placeholder);
+    }
+}
+
+void getCharFromMorse(const char* morseChar, char* character) {
+    for(int i = 0; i < coderDecoder.dictionary.size; i++) {
+        if(strcmp(coderDecoder.dictionary.morseCodes[i], morseChar) == 0) {
+            *character = coderDecoder.dictionary.characters[i];
+            return;
+        }
+    }
 }
 
 void decodeFromMorse(const char *morseCode, char *decodedText) {
     // Implement Morse code decoding logic here
+    char morseChar[MAX_MORSE_LENGTH] = "";
+    char placeholderText[MAX_CHAR_LNAME*(MAX_MORSE_LENGTH+1)] = "";
+    char placeholderChar;
+    for(int i = 0; i < strlen(morseCode); i++) {
+        if(morseCode[i] == ' ' || morseCode[i] == '\n') {
+            getCharFromMorse(morseChar, &placeholderChar);
+            strncat(placeholderText, &placeholderChar, 1);
+            strcpy(morseChar, "");
+            continue;
+        }
+        strncat(morseChar, &morseCode[i], 1);
+    }
+    strcpy(decodedText, placeholderText);
 }
 
+            
 void printDictionary() {
     // Implement the function to display the Morse code table
+    printf("Morse\tAlphabet\n");
+    for(int i = 0; i < coderDecoder.dictionary.size; i++) {
+        printf("%s\t%c\n", coderDecoder.dictionary.morseCodes[i], coderDecoder.dictionary.characters[i]);
+    }
 }
 
 void setMode(bool caseSensitive) {
     // Implement this function to set the case sensitivity mode
+    coderDecoder.caseSensitive = caseSensitive;
 }
