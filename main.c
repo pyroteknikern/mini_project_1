@@ -33,7 +33,6 @@ int main(void) {
             printf("Enter text you want to encode\n(encoder) >> ");
             char encodedString[INPUT_MORSE_LENGTH];
             fgets(input_text, INPUT_TEXT_LENGTH, stdin);
-            input_text[strlen(input_text) - 1] = '\0';
             if(strcmp(input_text, "exit") == 0) {
                 printf("Exiting encoder mode...\n");
             }
@@ -63,6 +62,13 @@ int main(void) {
                 decodeFromMorse(input_morse, decodedString);
                 printf("\nDecoded: %s\n\n\n", decodedString);
             }
+        }
+        else if(strcmp(command, "search") == 0) {
+            printf("Enter character you want to translate\n(search) >> ");
+            char input_char = getc(stdin);
+            char morseCode[MAX_MORSE_LENGTH];
+            getMorseCode(input_char, morseCode);
+            printf("\nMorse: %s\n\n\n", morseCode);
         }
         else {
             printf("Please enter a valid input\n\n");
