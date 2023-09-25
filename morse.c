@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <stdlib.h>
 #include "morse.h"
 
 Dictionary dictionary;
@@ -59,15 +61,13 @@ void initializeCoderDecoder(){
 }
 
 void encodeToMorse(const char *text, char *encodedText) {
-    // Implement Morse code encoding logic here
+    encodedText[0] = '\0';
     char morseChar[MAX_MORSE_LENGTH] = "";
-    char placeholder[MAX_CHAR_FNAME*(MAX_MORSE_LENGTH+1)] = "";
     for(int i = 0; i < strlen(text); i++) {
         getMorseCode(text[i], morseChar);
         if(strlen(morseChar) == 0) continue;
-        strcat(morseChar, " ");
-        strcat(placeholder, morseChar);
-        strcpy(encodedText, placeholder);
+        strcat(encodedText, morseChar);
+        strcat(encodedText, " ");
     }
 }
 
@@ -83,18 +83,16 @@ void getCharFromMorse(const char* morseChar, char* character) {
 void decodeFromMorse(const char *morseCode, char *decodedText) {
     // Implement Morse code decoding logic here
     char morseChar[MAX_MORSE_LENGTH] = "";
-    char placeholderText[MAX_CHAR_LNAME*(MAX_MORSE_LENGTH+1)] = "";
     char placeholderChar;
-    for(int i = 0; i < strlen(morseCode); i++) {
-        if(morseCode[i] == ' ' || morseCode[i] == '\n') {
+    for(int i = 0; i < strlen(morseCode) + 1; i++) {
+        if(morseCode[i] == ' ' || morseCode[i] == '\0') {
             getCharFromMorse(morseChar, &placeholderChar);
-            strncat(placeholderText, &placeholderChar, 1);
-            strcpy(morseChar, "");
+            strncat(decodedText, &placeholderChar, 1);
+            morseChar[0] = '\0';
             continue;
         }
         strncat(morseChar, &morseCode[i], 1);
     }
-    strcpy(decodedText, placeholderText);
 }
 
             
@@ -110,3 +108,25 @@ void setMode(bool caseSensitive) {
     // Implement this function to set the case sensitivity mode
     coderDecoder.caseSensitive = caseSensitive;
 }
+
+void getPerfectSizeString(char* str_ptr) {
+    char ch;
+    while((ch = getc(stdin)) != EOF) {
+        printf("%c\n", ch);
+    }
+}
+
+
+size_t nr_of_seg(char* morseCode, char ch) {
+    size_t char_counter = 0;
+    int i = 0;
+    while(1) {
+        if(morseCode[i] == '\0') break;
+        if(morseCode[i] == ch) {
+            char_counter++;
+        }
+        i++;
+    }
+    return char_counter++;
+}
+

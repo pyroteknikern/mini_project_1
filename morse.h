@@ -3,7 +3,7 @@
 #define MAX_CHAR_FNAME 32
 #define MAX_CHAR_LNAME 64
 #include "stdbool.h"
-
+#include<stdio.h>
 #define FALSE 0
 #define TRUE 1
 
@@ -36,7 +36,6 @@ struct CoderDecoder {
 
 typedef struct CoderDecoder CoderDecoder;
 
-
 void displayHelp();
 
 void initializeDictionary();
@@ -52,5 +51,7 @@ void encodeToMorse(const char *text, char *encodedText);
 void decodeFromMorse(const char *morseCode, char *decodedText);
 
 void setMode(bool caseSensitive);
+
+size_t nr_of_seg(char* , char );
 
 #endif
