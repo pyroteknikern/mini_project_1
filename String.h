@@ -17,5 +17,7 @@ int cat_string(String*, String*);
 void destroy_string(String*);
 void file_to_string(String*, FILE*);
 void print_string(String*);
-
+int strendswith(char*, char);
+int endswith_string(String*, char);
+void trunk_trailing_spaces(char*);
 #endif

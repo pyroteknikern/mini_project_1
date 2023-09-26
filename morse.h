@@ -1,22 +1,18 @@
 #ifndef MORSE_H
 #define MORSE_H
-#define MAX_CHAR_FNAME 32
-#define MAX_CHAR_LNAME 64
 #include "stdbool.h"
 #include<stdio.h>
 #define FALSE 0
 #define TRUE 1
 
   // Define the maximum length for Morse code representation
-#define MAX_MORSE_LENGTH 10
+#define MAX_MORSE_CHAR_LENGTH 5
 
   // Define the maximum size of the Morse code dictionary
 #define MAX_DICTIONARY_SIZE 36
 
 #define CMD_SIZE 32
 
-#define INPUT_TEXT_LENGTH 4
-#define INPUT_MORSE_LENGTH MAX_MORSE_LENGTH*INPUT_TEXT_LENGTH
 // Define a structure for the Morse code dictionary
 struct Dictionary {
     int id;
@@ -37,21 +33,18 @@ struct CoderDecoder {
 typedef struct CoderDecoder CoderDecoder;
 
 void displayHelp();
+void decode();
+void encode();
+void search();
+void printDictionary();
+void setMode(bool caseSensitive);
+void test();
 
 void initializeDictionary();
-
-void getMorseCode(const char character, char *morseCode);
-
-void printDictionary();
-
+int getMorseCode(const char character, char *morseCode);
 void initializeCoderDecoder();
-
-void encodeToMorse(const char *text, char *encodedText);
-
-void decodeFromMorse(const char *morseCode, char *decodedText);
-
-void setMode(bool caseSensitive);
-
+int encodeToMorse(const char *text, char *encodedText);
+int decodeFromMorse(const char *morseCode, char *decodedText);
 size_t nr_of_seg(char* , char );
-
+void encode_file_to_file(FILE*, FILE*);
 #endif
