@@ -132,7 +132,7 @@ void encode_file_to_file(FILE* source, FILE* dest) {
     while((ch = getc(source)) != EOF) {
         res = getMorseCode(ch, morseChar);
         if(res == 1) fprintf(dest, "%s ", morseChar);
-        if(res == -1) fprintf(dest, "X");
+        //if(res == -1) fprintf(dest, "X");
     }
     fflush(dest);
 }
@@ -186,24 +186,35 @@ size_t nr_of_seg(char* morseCode, char ch) {
  * command decode
  */
 void decode() {
-    printf("Enter text you want to decode\n(decoder) >> ");
     String input_str = new_str();
-    file_to_string(&input_str, stdin);
-    trunk_trailing_spaces(input_str.str);
-    char* decodedString = malloc((nr_of_seg(input_str.str, ' ') + 1) * sizeof(char));
-    decodedString[0] = '\0';
-    if(strcmp(input_str.str, "exit") == 0) {
-        printf("Exiting decoder mode...\n");
-    }
-    else {
-        if(decodeFromMorse(input_str.str, decodedString) != 1) printf("\nyou can only enter '.' and '-' and ' ' to separate characters\n\n");
-        else {
-            printf("\nDecoded: %s\n\n\n", decodedString);
+    bool run = true;
+    while(run) {
+        printf("Enter text you want to decode\n(decoder) >> ");
+        file_to_string(&input_str, stdin);
+        trunk_trailing_spaces(input_str.str);
+        char* decodedString = malloc((nr_of_seg(input_str.str, ' ') + 1) * sizeof(char));
+        decodedString[0] = '\0';
+        if(strcmp(input_str.str, "-exit") == 0) {
+            printf("Exiting decoder mode...\n");
+            break;
         }
+        else if(strcmp(input_str.str, "-o") == 0)
+            printf("- '-exit' exit decoder mode\n");
+        else {
+            if(decodeFromMorse(input_str.str, decodedString) != 1) 
+                printf("\nyou can only enter '.' and '-' and ' ' to separate characters\n\n");
+            else {
+                printf("\nDecoded: %s\n\n\n", decodedString);
+            }
+        }
+        free(decodedString);
     }
-    free(decodedString);
     destroy_string(&input_str);
 }
+
+/*
+ * encode text file to morse code alternative print file
+ */
 void encode_from_file() {
         printf("Enter name of file to encode\n>> "); 
         String input_str = new_str();
@@ -228,6 +239,7 @@ void encode_from_file() {
                 break;
             }
         }
+        printf("Unrecognizable characters will be ignored\n");
         encode_file_to_file(source, destination);
         if(destination != stdout) fclose(destination);
         fclose(source);
@@ -271,17 +283,25 @@ void encode() {
  * command search
  */
 void search() {
-    printf("Enter character you want to translate\n(search) >> ");
     String input_str = new_str();
-    file_to_string(&input_str, stdin);
-    if(strcmp(input_str.str, "exit") == 0) {
-        printf("Exiting search mode...\n");
-        return;
+    bool run = true;
+    while(run) {
+        printf("Enter character you want to translate\n(search) >> ");
+        file_to_string(&input_str, stdin);
+        if(strcmp(input_str.str, "-exit") == 0) {
+            printf("Exiting search mode...\n");
+            break;
+        }
+        else if(strcmp(input_str.str, "-o") == 0)
+            printf("- '-exit' exit search mode\n");
+        else {    
+            char input_char = input_str.str[0];
+            char morseCode[MAX_MORSE_CHAR_LENGTH];
+            if(getMorseCode(input_char, morseCode) != 1)
+                printf("this character was not found\n");
+            else
+                printf("\nMorse: %s\n\n\n", morseCode);
+        }
     }
-    char input_char = input_str.str[0];
-    char morseCode[MAX_MORSE_CHAR_LENGTH];
-    if(getMorseCode(input_char, morseCode) != 1)
-        printf("this character was not found\n");
-    else
-        printf("\nMorse: %s\n\n\n", morseCode);
+    destroy_string(&input_str);
 }
