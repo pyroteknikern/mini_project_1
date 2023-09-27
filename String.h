@@ -4,13 +4,12 @@
 struct custom_string_type {
     size_t allocated_size;
     size_t length;
-    size_t true_length;
     char* str;
 };
 
 typedef struct custom_string_type String;
 
-String new_str();
+String new_string();
 int char_append_string(String*, char);
 int populate_string(String*, char*);
 int cat_string(String*, String*);

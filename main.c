@@ -13,7 +13,7 @@ int main(void) {
     initializeDictionary();
     initializeCoderDecoder();
     
-    String cmd = new_str();
+    String cmd = new_string();
     while(!exit) {
         printf("\n\nWhat would like to do? Enter 'help' for list of commands\n>> ");
         file_to_string(&cmd, stdin);

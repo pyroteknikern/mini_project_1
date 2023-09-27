@@ -186,17 +186,17 @@ size_t nr_of_seg(char* morseCode, char ch) {
  * command decode
  */
 void decode() {
-    String input_str = new_str();
+    String input_str = new_string();
     bool run = true;
     while(run) {
-        printf("Enter text you want to decode\n(decoder) >> ");
+        printf("\nEnter text you want to decode\n(decoder) >> ");
         file_to_string(&input_str, stdin);
         trunk_trailing_spaces(input_str.str);
         char* decodedString = malloc((nr_of_seg(input_str.str, ' ') + 1) * sizeof(char));
         decodedString[0] = '\0';
         if(strcmp(input_str.str, "-exit") == 0) {
             printf("Exiting decoder mode...\n");
-            break;
+            run = false;
         }
         else if(strcmp(input_str.str, "-o") == 0)
             printf("- '-exit' exit decoder mode\n");
@@ -216,41 +216,47 @@ void decode() {
  * encode text file to morse code alternative print file
  */
 void encode_from_file() {
-        printf("Enter name of file to encode\n>> "); 
-        String input_str = new_str();
-        file_to_string(&input_str, stdin);
-        trunk_trailing_spaces(input_str.str);
-        FILE* source = fopen(input_str.str, "r");
-        FILE* destination;
-        printf("Would you like to print result to a file? (y/n)\n>> ");
-        bool y_n = true;
-        char y_n_char;
-        while(y_n) {
-            y_n_char = getc(stdin);
-            if(y_n_char == 'n') {
-                destination = stdout;
-                break;
-            }
-            if(y_n_char == 'y') {
-                printf("Enter filename to print encoded result\n>>");
-                file_to_string(&input_str, stdin);
-                trunk_trailing_spaces(input_str.str);
-                destination = fopen(input_str.str, "w+");
-                break;
-            }
-        }
-        printf("Unrecognizable characters will be ignored\n");
-        encode_file_to_file(source, destination);
-        if(destination != stdout) fclose(destination);
-        fclose(source);
+    printf("Enter name of file to encode\n>> "); 
+    String input_str = new_string();
+    file_to_string(&input_str, stdin);
+    trunk_trailing_spaces(input_str.str);
+    FILE* source = fopen(input_str.str, "r");
+    if(source == NULL) {
+        printf("\nFile was not found\n");
         destroy_string(&input_str);
-        getc(stdin);
+        return;
+    }
+    FILE* destination;
+    printf("Would you like to print result to a file? (y/n)\n>> ");
+    
+    bool y_n = true;
+    char y_n_char;
+    while(y_n) {
+        y_n_char = getc(stdin);
+        getc(stdin); //newline
+        if(y_n_char == 'n') {
+            destination = stdout;
+            break;
+        }
+        if(y_n_char == 'y') {
+            printf("Enter filename to print encoded result\n>>");
+            file_to_string(&input_str, stdin);
+            trunk_trailing_spaces(input_str.str);
+            destination = fopen(input_str.str, "w+");
+            break;
+        }
+    }
+    printf("\nUnrecognizable characters will be ignored\n\n");
+    encode_file_to_file(source, destination);
+    if(destination != stdout) fclose(destination);
+    fclose(source);
+    destroy_string(&input_str);
 }
 /*
  * command encode
  */
 void encode() {
-    String input_str = new_str();
+    String input_str = new_string();
     bool run = true;
     while(run) {
         printf("\nEnter text you want to encode (options '-o')\n(encoder) >> ");
@@ -267,7 +273,7 @@ void encode() {
         else if(strcmp(input_str.str, "-f") == 0)
             encode_from_file();
         else {
-            char* encodedString = malloc(input_str.true_length * MAX_MORSE_CHAR_LENGTH * sizeof(char));
+            char* encodedString = malloc((input_str.length * MAX_MORSE_CHAR_LENGTH + 1) * sizeof(char));
             encodedString[0] = '\0';
             if(encodeToMorse(input_str.str, encodedString) == -1) 
                 printf("Enter only letters and or numbers\n");
@@ -283,10 +289,10 @@ void encode() {
  * command search
  */
 void search() {
-    String input_str = new_str();
+    String input_str = new_string();
     bool run = true;
     while(run) {
-        printf("Enter character you want to translate\n(search) >> ");
+        printf("Enter character you want to translate (options '-o')\n(search) >> ");
         file_to_string(&input_str, stdin);
         if(strcmp(input_str.str, "-exit") == 0) {
             printf("Exiting search mode...\n");
