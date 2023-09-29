@@ -10,35 +10,38 @@ int main(void) {
 
     int exit = FALSE;
   //It is necessary to fill in the vocabulary initially
-    initializeDictionary();
-    initializeCoderDecoder();
+    Dictionary dict = initialize_dictionary();
+    CoderDecoder coderDecoder = initialize_coder_decoder(&dict);
     
-    String cmd = new_string();
+    String cmd = string_new();
+
     while(!exit) {
         printf("\n\nWhat would like to do? Enter 'help' for list of commands\n>> ");
-        file_to_string(&cmd, stdin);
-        trunk_trailing_spaces(cmd.str);
+        string_read_file(&cmd, stdin);
+        str_trunk_trailing_spaces(cmd.str);
         if(strcmp(cmd.str, "help") == 0)
-            displayHelp();
+            display_help();
         else if(strcmp(cmd.str, "code input text") == 0 || strcmp(cmd.str, "encode") == 0)
-            encode();
+            encode(&coderDecoder);
         else if(strcmp(cmd.str, "show") == 0)
-            printDictionary();
+            print_dictionary(&coderDecoder);
         else if(strcmp(cmd.str, "case_sensitive") == 0 || strcmp(cmd.str, "cs") == 0)
-            setMode(TRUE);
+            set_mode(&coderDecoder, TRUE);
         else if(strcmp(cmd.str, "case_insensitive") == 0 || strcmp(cmd.str, "ci") == 0)
-            setMode(FALSE);
+            set_mode(&coderDecoder, FALSE);
         else if(strcmp(cmd.str, "decode input text") == 0 || strcmp(cmd.str, "decode") == 0)
-            decode();
+            decode(&coderDecoder);
         else if(strcmp(cmd.str, "search") == 0)
-            search();
+            search(&coderDecoder);
+        else if(strcmp(cmd.str, "caesar") == 0)
+            caesar(&coderDecoder);
         else if(strcmp(cmd.str, "exit") == 0)
             exit = TRUE;
         else if(strcmp(cmd.str, "test") == 0)
-            test();
+            continue;
         else 
             printf("Please enter a valid input\n\n");
     }
-    destroy_string(&cmd);
+    string_destroy(&cmd);
     return 0;
 }

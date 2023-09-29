@@ -3,19 +3,14 @@
 #include <stdlib.h>
 
 /*
- * create dynamic string
- * return: dynamic string struct
- * note: before dynamic string goes out of scope call destroy_string(), if dynamic is not destroyed program will leak memory
+ * trim excess memory of dynamic string
+ * param1: dynamic string to resize
  */
-String new_string() {
-    String str;
-    str.allocated_size = sizeof(char);
-    str.str = malloc(sizeof(char));
-    str.str[0] = '\0';
-    str.length = 0;
-    return str;
+void trim_mem(String* str) {
+    size_t new_size = (str->length + 1) * sizeof(char);
+    str->str = realloc(str->str, new_size);
+    str->allocated_size = new_size;
 }
-
 /*
  * check if last character is the nullbyte
  * param1: dynamic string you want to check
@@ -27,13 +22,56 @@ int last_is_null(String* str) {
     return 1;
 }
 
+int str_endswith(char* str, char ch) {
+    size_t len = strlen(str);
+    if(str[len] == ch) return 1;
+    return 0;
+}
+
+/*
+ * removes trailing spaces from char[]
+ * param1: char[] to remove trailing spaces from
+ */
+void str_trunk_trailing_spaces(char* str) {
+    for(int i = strlen(str) - 1; i >= 0; i--) {
+        if(str[i] != ' ') return;
+        str[i] = '\0';
+        printf("trunk\n");
+    }
+}
+
+void string_trunk_trailing_spaces(String* str) {
+    for(int i = str->length - 1; i >= 0; i--) {
+        if(str->str[i] != ' ') return;
+        str->length--;
+        str->str[i] = '\0';
+    }
+    trim_mem(str); 
+}
+
+
+/*
+ * create dynamic string
+ * return: dynamic string struct
+ * note: before dynamic string goes out of scope call destroy_string(), if dynamic is not destroyed program will leak memory
+ */
+String string_new() {
+    String str;
+    str.allocated_size = sizeof(char);
+    str.str = malloc(sizeof(char));
+    str.str[0] = '\0';
+    str.length = 0;
+    return str;
+}
+
+
 /*
  * append character to end of dynamic string
  * param1: dynamic string to append to
  * param2: character to append
  * return: returns status, 1 for success, -1 for failure
  */
-int char_append_string(String* str, char element) {
+int string_append_char(String* str, char element) {
     if(str->length + 1 * sizeof(char) == str->allocated_size) {
         str->str = realloc(str->str, str->allocated_size * 2);
         if(str->str == NULL) return -1;
@@ -46,13 +84,14 @@ int char_append_string(String* str, char element) {
     return 1;
 }
 
+
 /*
  * populates dynamic string with cstring
  * param1: dynamic string to populate
  * param2: pointer to c-style string
  * return: return status, -1 for failure, 1 for success
  */
-int populate_string(String* str, char* cstring) {
+int string_populate(String* str, char* cstring) {
     size_t len = strlen(cstring);
     size_t new_size = (len  + 1) * sizeof(char);
     str->str = realloc(str->str, new_size);
@@ -73,7 +112,7 @@ int populate_string(String* str, char* cstring) {
  * param2: source
  * return: returns status, -1 for failure, 1 for success
  */
-int cat_string(String* dest, String* source) {
+int string_cat(String* dest, String* source) {
     size_t new_size = (dest->length + source->length + 1) * sizeof(char);
     dest->str = realloc(dest->str, new_size);
     dest->allocated_size = new_size;
@@ -89,7 +128,7 @@ int cat_string(String* dest, String* source) {
  * prints dynamic string
  * param1: dynamic string
  */
-void print_string(String* str) {
+void string_print(String* str) {
     for(int i = 0; i < str->length; i++) {
         printf("%c", str->str[i]);
     }
@@ -100,7 +139,7 @@ void print_string(String* str) {
  * param1: dynamic string
  * param2: file to read from
  */
-void file_to_string(String* str, FILE* file) {
+void string_read_file(String* str, FILE* file) {
     char ch;
     //make sure that string is only nullbyte
     str->length = 0;
@@ -109,52 +148,35 @@ void file_to_string(String* str, FILE* file) {
     str->allocated_size = sizeof(char);
     if(file == stdin) {
         while((ch = getc(file)) != '\n') {
-            char_append_string(str, ch);
+            string_append_char(str, ch);
         }
     }
     else {
         while((ch = getc(file)) != EOF) {
-            char_append_string(str, ch);
+            string_append_char(str, ch);
         }
     }
 }
 
-int strendswith(char* str, char ch) {
-    size_t len = strlen(str);
-    if(str[len] == ch) return 1;
-    return 0;
-}
-
-int endswith_string(String* str, char ch) {
+int string_endswith(String* str, char ch) {
     if(str->str[str->length - 1] == ch) return 1;
     return 0;
 }
 
-/*
- * removes trailing spaces from char[]
- * param1: char[] to remove trailing spaces from
- */
-void trunk_trailing_spaces(char* str) {
-    for(int i = strlen(str) - 1; i >= 0; i--) {
-        if(str[i] != ' ') return;
-        str[i] = '\0';
-    }
-}
 
 /*
- * trim excess memory of dynamic string
- * param1: dynamic string to resize
+ * clears content of dynamic string
+ * param1: dynamic string to clear
  */
-void trim_mem(String* str) {
-    size_t new_size = (str->length + 1) * sizeof(char);
-    str->str = realloc(str->str, new_size);
-    str->allocated_size = new_size;
+void string_clear(String* str) {
+    str->str[0] = '\0';
+    str->length = 0;
+    trim_mem(str);
 }
-
 /*
  * destroys string
  * param1: dynamic string to destroy
  */
-void destroy_string(String* str) {
+void string_destroy(String* str) {
     free(str->str);
 }
