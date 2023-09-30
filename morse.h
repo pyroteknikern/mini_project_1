@@ -17,7 +17,7 @@
 // Define a structure for the Morse code dictionary
 struct Dictionary {
     int id;
-    unsigned int size;
+    uint size;
     char numbers[NR_OF_NUMBERS + 1];
     char alphabet[NR_OF_CHARACTERS + 1];
     char* morse_numbers[NR_OF_NUMBERS + 1];
@@ -43,6 +43,8 @@ void print_dictionary(CoderDecoder*);
 void set_mode(CoderDecoder*, bool caseSensitive);
 void test();
 void caesar(CoderDecoder*);
+void status(CoderDecoder*);
+
 Dictionary initialize_dictionary();
 CoderDecoder initialize_coder_decoder(Dictionary*);
 #endif
