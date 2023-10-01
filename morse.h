@@ -18,12 +18,12 @@
 struct Dictionary {
     int id;
     uint size;
-    char numbers[NR_OF_NUMBERS];
-    char alphabet[NR_OF_CHARACTERS];
+    char numbers[NR_OF_NUMBERS + 1];
+    char alphabet[NR_OF_CHARACTERS + 1];
     char* morse_numbers[NR_OF_NUMBERS];
     char* morse_alphabet[NR_OF_CHARACTERS];
 
-    char characters[MAX_DICTIONARY_SIZE];
+    char characters[MAX_DICTIONARY_SIZE + 1];
     const char *morse_codes[MAX_DICTIONARY_SIZE];
 };
 typedef struct Dictionary Dictionary;
