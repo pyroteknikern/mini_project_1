@@ -6,20 +6,10 @@
  * trim excess memory of dynamic string
  * param1: dynamic string to resize
  */
-void trim_mem(String* str) {
+void string_trim_mem(String* str) {
     size_t new_size = (str->length + 1) * sizeof(char);
     str->str = realloc(str->str, new_size);
     str->allocated_size = new_size;
-}
-/*
- * check if last character is the nullbyte
- * param1: dynamic string you want to check
- * return: returns status, 1 if last is nullbyte, 0 if not
- * note: the last byte in the string should be the nullbyte so it can be used with normal string.h funcs
- */
-int last_is_null(String* str) {
-    if(str->str[str->length] != '\0') return 0;
-    return 1;
 }
 
 int str_endswith(char* str, char ch) {
@@ -46,7 +36,6 @@ void string_trunk_trailing_spaces(String* str) {
         str->length--;
         str->str[i] = '\0';
     }
-    trim_mem(str); 
 }
 
 
@@ -77,14 +66,10 @@ int string_append_char(String* str, char element) {
     if(str_length + 1 * sizeof(char) == str_alloc) {
         str->str = realloc(str->str, str_alloc * 2);
         str->allocated_size = str_alloc * 2;
-        if(str->str == NULL) {
-            return -1;
-        }
     }
     str->str[str_length] = element;
     str->str[str_length + 1] = '\0';
     str->length++;
-    if(!last_is_null(str)) return -1;
     return 1;
 }
 
@@ -96,17 +81,16 @@ int string_append_char(String* str, char element) {
  * return: return status, -1 for failure, 1 for success
  */
 int string_populate(String* str, char* cstring) {
-    size_t len = strlen(cstring);
-    size_t new_size = (len  + 1) * sizeof(char);
+    size_t cstring_len = strlen(cstring);
+    size_t new_size = (cstring_len  + 1) * sizeof(char);
     str->str = realloc(str->str, new_size);
     str->allocated_size = new_size;
     if(str->str == NULL) return -1;
-    str->length = len;
+    str->length = cstring_len;
 
-    for(int i = 0; i < len + 1; i++) {
+    for(int i = 0; i < cstring_len + 1; i++) { //includes the nullbyte
         str->str[i] = cstring[i];
     }
-    if(!last_is_null(str)) return -1;
     return 1;
 }
 
@@ -124,7 +108,6 @@ int string_cat(String* dest, String* source) {
         dest->str[dest->length + i] = source->str[i];
     }
     dest->length += source->length;
-    if(!last_is_null(dest)) return -1;
     return 1;
 }
 
@@ -161,7 +144,6 @@ void string_read_file(String* str, FILE* file) {
             string_append_char(str, ch);
         }
     }
-    trim_mem(str);
 }
 
 int string_endswith(String* str, char ch) {
@@ -171,13 +153,12 @@ int string_endswith(String* str, char ch) {
 
 
 /*
- * clears content of dynamic string
+ * clears content of dynamic string and trims the memory
  * param1: dynamic string to clear
  */
 void string_clear(String* str) {
     str->str[0] = '\0';
     str->length = 0;
-    trim_mem(str);
 }
 /*
  * destroys string

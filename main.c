@@ -46,6 +46,7 @@ int main(void) {
             String test = string_new();
             string_read_file(&test, stdin);
             string_print(&test);
+            string_destroy(&test);
         }
         else 
             printf("Please enter a valid input\n\n");

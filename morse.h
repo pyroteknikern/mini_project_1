@@ -36,14 +36,14 @@ struct CoderDecoder {
 typedef struct CoderDecoder CoderDecoder;
 
 void display_help();
-void decode(CoderDecoder*);
-void encode(CoderDecoder*);
-void search(CoderDecoder*);
-void print_dictionary(CoderDecoder*);
+void decode(const CoderDecoder*);
+void encode(const CoderDecoder*);
+void search(const CoderDecoder*);
+void print_dictionary(const CoderDecoder*);
 void set_mode(CoderDecoder*, bool caseSensitive);
 void test();
-void caesar(CoderDecoder*);
-void status(CoderDecoder*);
+void caesar(const CoderDecoder*);
+void status(const CoderDecoder*);
 
 Dictionary initialize_dictionary();
 CoderDecoder initialize_coder_decoder(Dictionary*);
