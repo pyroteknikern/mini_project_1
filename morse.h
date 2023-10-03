@@ -7,9 +7,9 @@
 
 #define uint unsigned int
   // Define the maximum length for Morse code representation
-#define MAX_MORSE_CHAR_LENGTH 5
+#define MAX_MORSE_CHAR_LENGTH 6
   // Define the maximum size of the Morse code dictionary
-#define MAX_DICTIONARY_SIZE 36
+#define MAX_DICTIONARY_SIZE 37 //space icluded
 #define CMD_SIZE 32
 
 #define NR_OF_NUMBERS 10
@@ -20,11 +20,11 @@ struct Dictionary {
     uint size;
     char numbers[NR_OF_NUMBERS + 1];
     char alphabet[NR_OF_CHARACTERS + 1];
-    char* morse_numbers[NR_OF_NUMBERS];
-    char* morse_alphabet[NR_OF_CHARACTERS];
+    char morse_numbers[NR_OF_NUMBERS][MAX_MORSE_CHAR_LENGTH + 1];
+    char morse_alphabet[NR_OF_CHARACTERS][MAX_MORSE_CHAR_LENGTH + 1];
 
     char characters[MAX_DICTIONARY_SIZE + 1];
-    const char *morse_codes[MAX_DICTIONARY_SIZE];
+    char morse_codes[MAX_DICTIONARY_SIZE][MAX_MORSE_CHAR_LENGTH + 1];
 };
 typedef struct Dictionary Dictionary;
 

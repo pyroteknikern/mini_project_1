@@ -39,20 +39,22 @@ Dictionary initialize_dictionary() {
     char chars[MAX_DICTIONARY_SIZE];
     strcpy(dictionary.characters, nums);
     strcat(dictionary.characters, alph);
+    strcat(dictionary.characters, " ");
 
 
-    char* morse_numbers[] = {".----", "..---", "...--", "....-", ".....", "-....", "--...", "---..", "----.", "-----"};
-    char* morse_alphabet[] = {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."};
+    char* morse_numbers[] = {".---- ", "..--- ", "...-- ", "....- ", "..... ", "-.... ", "--... ", "---.. ", "----. ", "----- "};
+    char* morse_alphabet[] = {".- ", "-... ", "-.-. ", "-.. ", ". ", "..-. ", "--. ", ".... ", ".. ", ".--- ", "-.- ", ".-.. ", "-- ", "-. ", "--- ", ".--. ", "--.- ", ".-. ", "... ", "- ", "..- ", "...- ", ".-- ", "-..- ", "-.-- ", "--.. "};
 
-
+    
     for(size_t i = 0; i < NR_OF_NUMBERS; i++) {
-        dictionary.morse_codes[i] = morse_numbers[i];
-        dictionary.morse_numbers[i] = morse_numbers[i];
+        strcpy(dictionary.morse_codes[i], morse_numbers[i]);
+        strcpy(dictionary.morse_numbers[i], morse_numbers[i]);
     }
     for(size_t i = 0; i < NR_OF_CHARACTERS; i++) {
-        dictionary.morse_codes[i + NR_OF_NUMBERS] = morse_alphabet[i];
-        dictionary.morse_alphabet[i] = morse_alphabet[i];
+        strcpy(dictionary.morse_codes[i + NR_OF_NUMBERS], morse_alphabet[i]);
+        strcpy(dictionary.morse_alphabet[i], morse_alphabet[i]);
     }
+    strcpy(dictionary.morse_codes[MAX_DICTIONARY_SIZE - 1], " ");
     return dictionary;
 }
 
@@ -245,18 +247,16 @@ int decode_from_morse(CoderDecoder* coderDecoder, const char *morse_code, char *
     int return_status = 1;
     int tmp_status;
     for(int i = 0; i < strlen(morse_code) + 1; i++) {
-        if(morse_code[i] != ' ' && morse_code[i]  != '\0') {
-            string_append_char(&morse_char, morse_code[i]);
-            continue;
-        }
-        if((tmp_status = decode_get_char_from_morse(coderDecoder, morse_char.str, &tmp_char)) == -1) {
-            return_status = -1;
-            string_clear(&morse_char);
-        }
-        if(tmp_status == 1) {
+        if(morse_code[i] == ' ' || morse_code[i] == '\0') {
+            string_append_char(&morse_char, ' ');
+            if(decode_get_char_from_morse(coderDecoder, morse_char.str, &tmp_char) == -1)
+                return_status = -1;
             strncat(decoded_text, &tmp_char, 1);
             string_clear(&morse_char);
-        }
+            if(morse_code[i] == '\0') break;
+            continue;
+        } 
+        string_append_char(&morse_char, morse_code[i]);
     }
     string_destroy(&morse_char);
     return return_status;
@@ -294,7 +294,7 @@ void decode(CoderDecoder* coderDecoder) {
             continue;
         }
         else if(!decode_check_valid_input_chars(&input_str)) {
-            printf("\nYou can only enter '.' and '-' with spaces to separate characters\n\n");
+            printf("\nYou can only enter '.' and '-' with spaces to separate characters and double spaces to seperate words\n\n");
             continue;
         }
         char* decodedString = malloc((nr_of_seg(input_str.str, ' ') + 1) * sizeof(char));
@@ -351,7 +351,6 @@ int encode_to_morse(CoderDecoder* coderDecoder, const char *text, char *encoded_
             return_status = -1;
         else {
             strcat(encoded_text, morse_char);
-            strcat(encoded_text, " ");
         }
     }
     return return_status;
@@ -370,7 +369,7 @@ int encode_stream_file_to_file(CoderDecoder* coderDecoder, FILE* source, FILE* d
     while((ch = getc(source)) != EOF) {
         if(encode_get_morse_code(coderDecoder, ch, morse_char) != 1)
             res = -1;
-        fprintf(dest, "%s ", morse_char);
+        fprintf(dest, "%s", morse_char);
     }
     fflush(dest);
     return res;
