@@ -72,13 +72,17 @@ String string_new() {
  * return: returns status, 1 for success, -1 for failure
  */
 int string_append_char(String* str, char element) {
-    if(str->length + 1 * sizeof(char) == str->allocated_size) {
-        str->str = realloc(str->str, str->allocated_size * 2);
-        if(str->str == NULL) return -1;
-        str->allocated_size *= 2;
+    size_t str_length = str->length;
+    size_t str_alloc = str->allocated_size;
+    if(str_length + 1 * sizeof(char) == str_alloc) {
+        str->str = realloc(str->str, str_alloc * 2);
+        str->allocated_size = str_alloc * 2;
+        if(str->str == NULL) {
+            return -1;
+        }
     }
-    str->str[str->length] = element;
-    str->str[str->length + 1] = '\0';
+    str->str[str_length] = element;
+    str->str[str_length + 1] = '\0';
     str->length++;
     if(!last_is_null(str)) return -1;
     return 1;
@@ -95,8 +99,8 @@ int string_populate(String* str, char* cstring) {
     size_t len = strlen(cstring);
     size_t new_size = (len  + 1) * sizeof(char);
     str->str = realloc(str->str, new_size);
-    if(str->str == NULL) return -1;
     str->allocated_size = new_size;
+    if(str->str == NULL) return -1;
     str->length = len;
 
     for(int i = 0; i < len + 1; i++) {
@@ -143,9 +147,10 @@ void string_read_file(String* str, FILE* file) {
     char ch;
     //make sure that string is only nullbyte
     str->length = 0;
-    str->str = malloc(sizeof(char));
     str->str[0] = '\0';
-    str->allocated_size = sizeof(char);
+    size_t pre_alloc_size = 256; // pre allocate memory for 255 + \0 characters to improve performance
+    str->str = realloc(str->str, pre_alloc_size);
+    str->allocated_size = pre_alloc_size;
     if(file == stdin) {
         while((ch = getc(file)) != '\n') {
             string_append_char(str, ch);
@@ -156,6 +161,7 @@ void string_read_file(String* str, FILE* file) {
             string_append_char(str, ch);
         }
     }
+    trim_mem(str);
 }
 
 int string_endswith(String* str, char ch) {

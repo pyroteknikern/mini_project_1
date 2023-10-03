@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include "String.h"
 #include "morse.h"
 
@@ -43,8 +42,11 @@ int main(void) {
             status(&coderDecoder);
         else if(strcmp(cmd.str, "exit") == 0)
             exit = TRUE;
-        else if(strcmp(cmd.str, "test") == 0)
-            continue;
+        else if(strcmp(cmd.str, "test") == 0) {
+            String test = string_new();
+            string_read_file(&test, stdin);
+            string_print(&test);
+        }
         else 
             printf("Please enter a valid input\n\n");
     }
