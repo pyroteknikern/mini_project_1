@@ -121,6 +121,16 @@ void string_print(String* str) {
     }
 }
 
+void string_input(String* str) {
+    size_t pre_alloc_size = 32;
+    str->str = realloc(str->str, pre_alloc_size);
+    str->allocated_size = pre_alloc_size;
+    char ch = getchar();
+    while(ch != ' ' && ch != '\0' && ch != '\n') {
+        string_append_char(str, ch);
+        ch = getchar();
+    }
+}
 /*
  * reads file and inserts text into dynamic string
  * param1: dynamic string

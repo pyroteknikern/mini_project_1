@@ -16,6 +16,7 @@ int string_append_char(String*, char);
 int string_populate(String*, char*);
 int string_cat(String*, String*);
 void string_destroy(String*);
+void string_input(String*);
 void string_read_file(String*, FILE*);
 void string_print(String*);
 int string_endswith(String*, char);

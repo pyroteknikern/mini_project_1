@@ -11,16 +11,17 @@ void buffer_clear() {
 }
 
 void display_help() {
-    printf("- 'help'\t\t\tshows the list of commands and what they do.\n");
-    printf("- 'code input text' 'encode'\tcode the input text in Morse code.\n");
-    printf("- 'decode input text' 'decode'\tdecode the entered Morse code.\n");
-    printf("- 'search'\t\t\ttranslate specified character to morse code.\n");
-    printf("- 'show'\t\t\tshow available characters.\n");
-    printf("- 'case_sensitive' 'cs'\t\tenable case-sensitive processing.\n");
-    printf("- 'case_insensitive' 'ci'\tenable case-insensitive processing.\n");
-    printf("- 'status'\t\t\tsee status of decoder.\n");
-    printf("- 'caesar'\t\t\tuse the caesar encoder.\n");
-    printf("- 'exit'\t\t\texit\n\n");
+    printf("- 'help'\t\t\t\tshows the list of commands and what they do.\n");
+    printf("- 'encode <input text>'\t\t\tcode the input text in Morse code.\n");
+    printf("- 'decode <input text>'\t\t\tdecode the entered Morse code.\n");
+    printf("- 'search <input character>'\t\ttranslate specified character to morse code.\n");
+    printf("- 'show'\t\t\t\tshow available characters.\n");
+    printf("- 'case_sensitive' 'cs'\t\t\tenable case-sensitive processing.\n");
+    printf("- 'case_insensitive' 'ci'\t\tenable case-insensitive processing.\n");
+    printf("- 'status'\t\t\t\tsee status of decoder.\n");
+    printf("- 'caesar <key> <input text>'\t\tuse the caesar encoder.\n");
+    printf("- 'encode_file <input.txt> <output.txt>\tencodes file and outputs to file.\n");
+    printf("- 'exit'\t\t\t\texit\n\n");
 }
 
 // Implement the functions here
@@ -181,41 +182,27 @@ int caesar_encrypt(const CoderDecoder* coderDecoder, String* input, String* dest
  * command caesar
  */
 void caesar(const CoderDecoder *coderDecoder) {
-    String input_str = string_new();
-    bool run = true;
-    while(run) {
-        printf("\nEnter text you want to encrypt (help '-h')\n(caesar) >> ");
-        string_read_file(&input_str, stdin);
-        string_trunk_trailing_spaces(&input_str);
-        if(strcmp(input_str.str, "-h") == 0) {
-            printf("\n- '-back' exit caesar mode\n");
-            continue;
-        }
-        else if(strcmp(input_str.str, "-back") == 0) {
-            run = false;
-            continue;
-        }
-        printf("\nEnter shift number\n(caesar) >> ");
-        uint shift_nr;
-        int result = scanf("%d", &shift_nr);
-        if(result == EOF) {
-            printf("\nNo Entry\n");
-            continue;
-        }
-        if(result == 0) {
-            buffer_clear();
-            printf("\nCould not read\n");
-            continue;
-        }
-        String encrypted_string = string_new();
-        if(caesar_encrypt(coderDecoder, &input_str, &encrypted_string, shift_nr) != 1)
-            printf("\nSome characters could not be found and will be ignored\n");
-        buffer_clear();
-        printf("\nEncryted: %s\n\n", encrypted_string.str);
-        string_destroy(&encrypted_string);
+    uint shift_nr;
+    int result = scanf("%d", &shift_nr);
+    getchar();
+    if(result == EOF) {
+        printf("\nNo Entry\n");
+        return;
     }
+    if(result == 0) {
+        buffer_clear();
+        printf("\nCould not read\n");
+        return;
+    }
+    String input_str = string_new();
+    string_read_file(&input_str, stdin);
+    string_trunk_trailing_spaces(&input_str);
+    String encrypted_string = string_new();
+    if(caesar_encrypt(coderDecoder, &input_str, &encrypted_string, shift_nr) != 1)
+        printf("\nSome characters could not be found and will be ignored\n");
+    printf("\nEncryted: %s\n\n", encrypted_string.str);
+    string_destroy(&encrypted_string);
     string_destroy(&input_str);
-    printf("\nExiting caesar encoder...\n");
 }
 
 /*
@@ -251,7 +238,6 @@ int decode_from_morse(const CoderDecoder* coderDecoder, const String *morse_code
     char tmp_char;
     int return_status = 1;
     int tmp_status;
-    printf("%ld\n", morse_code->length);
     for(int i = 0; i < morse_code->length + 1; i++) {
         if(morse_code->str[i] != ' ' && morse_code->str[i] != '\0') {
             string_append_char(&morse_char, morse_code->str[i]);
@@ -287,34 +273,19 @@ int decode_check_valid_input_chars(const String* input) {
  */
 void decode(const CoderDecoder* coderDecoder) {
     String input_str = string_new();
-    bool run = true;
-
-    while(run) {
-        string_clear(&input_str);
-        printf("\nEnter text you want to decode (help '-h')\n(decoder) >> ");
-        string_read_file(&input_str, stdin);
-        string_trunk_trailing_spaces(&input_str);
-        if(strcmp(input_str.str, "-back") == 0) {
-            run = false;
-            continue;
-        }
-        else if(strcmp(input_str.str, "-h") == 0) {
-            printf("- '-back' exit decoder mode\n");
-            continue;
-        }
-        else if(!decode_check_valid_input_chars(&input_str)) {
-            printf("\nYou can only enter '.' and '-' with spaces to separate characters and double spaces to seperate words\n\n");
-            continue;
-        }
-        String decoded_input = string_new();
-        if(decode_from_morse(coderDecoder, &input_str, &decoded_input) != 1)
-            printf("\nSome characters were not found, they will be ignored\n");
-        printf("\nDecoded: %s\n\n\n", decoded_input.str);
-        string_destroy(&decoded_input);
+    string_read_file(&input_str, stdin);
+    string_trunk_trailing_spaces(&input_str);
+    if(!decode_check_valid_input_chars(&input_str)) {
+        printf("\nYou can only enter '.' and '-' with spaces to separate characters and double spaces to seperate words\n\n");
+        string_destroy(&input_str);
+        return;
     }
-
+    String decoded_input = string_new();
+    if(decode_from_morse(coderDecoder, &input_str, &decoded_input) != 1)
+        printf("\nSome characters were not found, they will be ignored\n");
+    printf("\nDecoded: %s\n\n\n", decoded_input.str);
+    string_destroy(&decoded_input);
     string_destroy(&input_str);
-    printf("\nExiting decoder mode...\n");
 }
 
 
@@ -386,84 +357,45 @@ int encode_stream_file_to_file(const CoderDecoder* coderDecoder, FILE* source, F
 /*
  * encode text file to morse code alternative print file
  */
-void encode_from_file(const CoderDecoder* coderDecoder) {
-    printf("Enter name of file to read\n(select file) >> "); 
-    String input_str = string_new();
-    string_read_file(&input_str, stdin);
-    string_trunk_trailing_spaces(&input_str);
-    FILE* source = fopen(input_str.str, "r");
+void encode_file(const CoderDecoder* coderDecoder) {
+    String file1_string = string_new();
+    string_input(&file1_string);
+    string_trunk_trailing_spaces(&file1_string);
+    FILE* source = fopen(file1_string.str, "r");
+    string_destroy(&file1_string);
     if(source == NULL) {
         printf("\nFile was not found\n");
-        string_destroy(&input_str);
         return;
     }
-    FILE* destination;
-    
-    bool y_n = true;
-    char y_n_char;
-    while(y_n) {
-        printf("Would you like to print result to a file? (y/n)\n>> ");
-        int result = scanf("%c", &y_n_char);
-        if(result == 0) {
-            printf("Could not read\n");
-            continue;
-        }
-        if(result == EOF) {
-            printf("No entry\n");
-            continue;
-        }
-        buffer_clear();
-        if(y_n_char == 'n') {
-            destination = stdout;
-            break;
-        }
-        if(y_n_char == 'y') {
-            printf("Enter filename to print encoded result\n(select file) >>");
-            string_read_file(&input_str, stdin);
-            string_trunk_trailing_spaces(&input_str);
-            destination = fopen(input_str.str, "w+");
-            break;
-        }
-        printf("Enter 'y' or 'n' to continue\n");
+    String file2_string = string_new();
+    string_input(&file2_string);
+    string_trunk_trailing_spaces(&file2_string);
+    FILE* destination = fopen(file2_string.str, "w+");
+    string_destroy(&file2_string);
+    if(source == NULL) {
+        printf("\nFile was not found\n");
+        return;
     }
     if(encode_stream_file_to_file(coderDecoder, source, destination) != 1)
         printf("\n\nSome characters were not found, they will be ignored\n\n");
     if(destination != stdout) fclose(destination);
     fclose(source);
-    string_destroy(&input_str);
 }
 /*
  * command encode
  */
 void encode(const CoderDecoder* coderDecoder) {
     String input_str = string_new();
-    bool run = true;
-    while(run) {
-        printf("\nEnter text you want to encode (help '-h')\n(encoder) >> ");
-        string_read_file(&input_str, stdin);
-        string_trunk_trailing_spaces(&input_str);
-        if(strcmp(input_str.str, "-back") == 0) {
-            run = false;
-            continue;
-        }
-        else if(strcmp(input_str.str, "-h") == 0) {
-            printf("\n- '-f' encode text from file\n");
-            printf("- '-back' exit\n");
-            continue;
-        }
-        else if(strcmp(input_str.str, "-f") == 0) {
-            encode_from_file(coderDecoder);
-            continue;
-        }
-        char* encodedString = malloc((input_str.length * MAX_MORSE_CHAR_LENGTH + 2) * sizeof(char));
-        encodedString[0] = '\0';
-        if(encode_to_morse(coderDecoder, input_str.str, encodedString) == -1) 
-            printf("\nSome characters were not found, they will be ignored\n");
-        printf("\nMorse: %s\n\n\n", encodedString);
-        free(encodedString);
-    }
+    string_read_file(&input_str, stdin);
+    string_trunk_trailing_spaces(&input_str);
+    
+    char* encodedString = malloc((input_str.length * MAX_MORSE_CHAR_LENGTH + 2) * sizeof(char));
+    encodedString[0] = '\0';
+    if(encode_to_morse(coderDecoder, input_str.str, encodedString) == -1) 
+        printf("\nSome characters were not found, they will be ignored\n");
+    printf("\nMorse: %s\n\n\n", encodedString);
+    free(encodedString);
     string_destroy(&input_str);
-    printf("\nExiting encoder mode...\n");
 }
 
 /*
@@ -471,32 +403,18 @@ void encode(const CoderDecoder* coderDecoder) {
  */
 void search(const CoderDecoder* coderDecoder) {
     String input_str = string_new();
-    bool run = true;
-    while(run) {
-        printf("\nEnter character you want to translate (help '-h')\n(search) >> ");
-        string_read_file(&input_str, stdin);
-            
-        if(strcmp(input_str.str, "-back") == 0) {
-            run = false;
-            continue;
-        }
-
-        else if(strcmp(input_str.str, "-h") == 0) {
-            printf("\n- '-back' exit search mode\n");   
-            continue;
-        }
-
-        if(input_str.length != 1) {
-            printf("\nEnter only 1 character\n");
-            continue;
-        }
-        char input_char = input_str.str[0];
-        char morseCode[MAX_MORSE_CHAR_LENGTH];
-        if(encode_get_morse_code(coderDecoder, input_char, morseCode) != 1)
-            printf("\nThis character was not found\n");
-        else
-            printf("\nMorse: %s\n\n\n", morseCode);
+    string_read_file(&input_str, stdin);
+        
+    if(input_str.length != 1) {
+        printf("\nEnter only 1 character\n");
+        string_destroy(&input_str);
+        return;
     }
+    char input_char = input_str.str[0];
+    char morseCode[MAX_MORSE_CHAR_LENGTH];
+    if(encode_get_morse_code(coderDecoder, input_char, morseCode) != 1)
+        printf("\nThis character was not found\n");
+    else
+        printf("\nMorse: %s\n\n\n", morseCode);
     string_destroy(&input_str);
-    printf("\nExiting search mode...\n");
 }

@@ -38,6 +38,7 @@ typedef struct CoderDecoder CoderDecoder;
 void display_help();
 void decode(const CoderDecoder*);
 void encode(const CoderDecoder*);
+void encode_file(const CoderDecoder*);
 void search(const CoderDecoder*);
 void print_dictionary(const CoderDecoder*);
 void set_mode(CoderDecoder*, bool caseSensitive);
