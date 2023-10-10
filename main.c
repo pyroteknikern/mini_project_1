@@ -15,7 +15,7 @@ int main(void) {
     String cmd = string_new();
 
     while(!exit) {
-        printf("\n\nWhat would like to do? Enter 'help' for list of commands\n(main) >> ");
+        printf("\n\nWhat would like to do? Enter 'help' for list of commands\n(command) >> ");
         string_clear(&cmd);
         string_input(&cmd);
         str_trunk_trailing_spaces(cmd.str);

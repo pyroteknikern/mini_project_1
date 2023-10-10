@@ -37,7 +37,6 @@ Dictionary initialize_dictionary() {
     strcpy(dictionary.alphabet, alph);
     char nums[] = "1234567890";
     strcpy(dictionary.numbers, nums);
-    char chars[MAX_DICTIONARY_SIZE];
     strcpy(dictionary.characters, nums);
     strcat(dictionary.characters, alph);
     strcat(dictionary.characters, " ");
@@ -184,7 +183,7 @@ int caesar_encrypt(const CoderDecoder* coderDecoder, String* input, String* dest
 void caesar(const CoderDecoder *coderDecoder) {
     uint shift_nr;
     int result = scanf("%d", &shift_nr);
-    getchar();
+
     if(result == EOF) {
         printf("\nNo Entry\n");
         return;
@@ -194,6 +193,7 @@ void caesar(const CoderDecoder *coderDecoder) {
         printf("\nCould not read\n");
         return;
     }
+    getchar();
     String input_str = string_new();
     string_read_file(&input_str, stdin);
     string_trunk_trailing_spaces(&input_str);
@@ -364,7 +364,7 @@ void encode_file(const CoderDecoder* coderDecoder) {
     FILE* source = fopen(file1_string.str, "r");
     string_destroy(&file1_string);
     if(source == NULL) {
-        printf("\nFile was not found\n");
+        printf("\nSource file was not found\n");
         return;
     }
     String file2_string = string_new();
@@ -373,7 +373,7 @@ void encode_file(const CoderDecoder* coderDecoder) {
     FILE* destination = fopen(file2_string.str, "w+");
     string_destroy(&file2_string);
     if(source == NULL) {
-        printf("\nFile was not found\n");
+        printf("\nDestination file was not found\n");
         return;
     }
     if(encode_stream_file_to_file(coderDecoder, source, destination) != 1)

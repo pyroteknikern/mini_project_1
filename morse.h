@@ -16,7 +16,7 @@
 #define NR_OF_CHARACTERS 26
 // Define a structure for the Morse code dictionary
 struct Dictionary {
-    int id;
+    uint id;
     uint size;
     char numbers[NR_OF_NUMBERS + 1];
     char alphabet[NR_OF_CHARACTERS + 1];
