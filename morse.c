@@ -86,8 +86,8 @@ void status(const CoderDecoder* coderDecoder) {
 void print_dictionary(const CoderDecoder* coderDecoder) {
     printf("\t Morse Alphabet\n\n");
     for(int i = 0; i < NR_OF_CHARACTERS; i++) {
-        printf("%s\t%c", coderDecoder->dictionary.morse_alphabet[i], coderDecoder->dictionary.alphabet[i]);
-        printf("\t|\t");
+        printf("%\t\t%c", coderDecoder->dictionary.morse_alphabet[i], coderDecoder->dictionary.alphabet[i]);
+        printf("\t\t|\t\t");
         if(i < NR_OF_NUMBERS) printf("%s\t%c", coderDecoder->dictionary.morse_numbers[i], coderDecoder->dictionary.numbers[i]);
         printf("\n");
     }
